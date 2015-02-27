@@ -5,7 +5,7 @@
 # Simple
 def apply_recursively(fn, iterable):
     if not iterable:
-        return []
+        return iterable
     if not hasattr(iterable, '__iter__'):
         return fn(iterable)
     if len(iterable)>1:
@@ -17,7 +17,7 @@ def apply_recursively(fn, iterable):
 # With predicate
 def apply_recursively(fn, iterable, predicate=lambda x: True):
     if not iterable:
-        return []
+        return iterable
     if not hasattr(iterable, '__iter__'):
         if predicate(iterable):
            return fn(iterable)
@@ -28,6 +28,7 @@ def apply_recursively(fn, iterable, predicate=lambda x: True):
                 apply_recursively(fn, iterable[1:], predicate)
     else:
         return [apply_recursively(fn, iterable[0], predicate)]
+
 
 
 ############################## Examples ################################
