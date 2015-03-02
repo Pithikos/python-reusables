@@ -21,8 +21,12 @@ def access(keystring, container):
         # case: empty str
         if key[0]=='':
             items = []
-            for item in container:
-                items.append(use_key(key[1:], item))
+            if isinstance(container, list):
+                for item in container:
+                    items.append(use_key(key[1:], item))
+            elif isinstance(container, dict):
+                for k in container:
+                    items.append(use_key(key[1:], container[k]))
             return items
         # case: index or key and still many keys
         elif len(key)>1:
