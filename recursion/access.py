@@ -39,7 +39,6 @@ def access(keystring, container):
             return use_key(key[1:], container[key[0]])
         # case: single index or key
         else:
-            #print(type(container))
             if (isinstance(container, dict) and key[0] in container) or\
                 (hasattr(container, '__iter__') and key[0]<len(container)):
                 return container[key[0]]
