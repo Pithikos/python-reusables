@@ -10,7 +10,10 @@ Example:
   access('squares::0', lst)  # This will loop through lst['squares'] and for every item will give item[0]
 
 As you might notice, this function is most useful when used with complex
-nested structures.
+nested structures. A second observation that to be made is that all output
+of the function depends highly in the context. So some times you get back
+a single list and sometimes a list of lists, etc.
+
 '''
 def access(keystring, container):
     key_sequence = keystring.rstrip(':').split(':')
@@ -21,19 +24,27 @@ def access(keystring, container):
         # case: empty str
         if key[0]=='':
             items = []
-            if isinstance(container, list):
+            if isinstance(container, dict):
+                for k in container:
+                    if len(key)>1:
+                        items.append(use_key(key[1:], container[k]))
+                    else:
+                        items.append(container[k])
+            elif hasattr(container, '__iter__'):
                 for item in container:
                     items.append(use_key(key[1:], item))
-            elif isinstance(container, dict):
-                for k in container:
-                    items.append(use_key(key[1:], container[k]))
             return items
         # case: index or key and still many keys
         elif len(key)>1:
             return use_key(key[1:], container[key[0]])
         # case: single index or key
         else:
-            return container[key[0]]
+            #print(type(container))
+            if (isinstance(container, dict) and key[0] in container) or\
+                (hasattr(container, '__iter__') and key[0]<len(container)):
+                return container[key[0]]
+            else:
+                return None
     return use_key(key_sequence, container)
 
 
@@ -66,3 +77,32 @@ print(access(':classes::1', devices))   # => [['Communications', 'Vendor Specifi
 print(access(':serial:1', devices))     # => ['ap67', 'ap68']
 print(access(':idVendor:1', devices))   # => ['STMicroelectronics', 'NXP']
 print(access('idVendor:1', devices[0])) # => 'STMicroelectronics'
+
+
+
+
+
+################################# TESTS ################################
+nums = [
+    [3, 5, 7, 1],
+    [3, 2, 1]
+]
+assert access(':3', nums)  == [1, None]
+assert access(':10', nums) == [None, None]
+
+
+nums = {
+    'a': [1, 2, 3],
+    'b': [5, 2, 1],
+}
+assert access(':', nums) == [[1, 2, 3], [5, 2, 1]]
+assert access(':0', nums) == [1, 5]
+
+
+nums = [
+    {'a':1, 'b':2, 'c':3},
+    {'a':5, 'b':2, 'c':1},
+    {'x':2, 'y':1, 'z':1},
+]
+assert access(':a', nums) == [1, 5, None]
+assert access(':c', nums) == [3, 1, None]
