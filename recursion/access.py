@@ -1,3 +1,6 @@
+# TODO:
+# * Allow to access object's property
+
 '''
 This implementation is a fast way to access specific elements in a complex
 nested structure. Keystring is a simple string that holds keys and indice
