@@ -6,6 +6,13 @@ def tablefy(keystring, struct, expand_lists_to_bool=False, flatten_lists=True):
     Keystring is a string using the same syntax used in the access() function.
     The keystring will be used to give rows as a list of lists. Notice that tablefy
     will work ONLY for iterables
+    keystring            - multiple keystrings separated by comma. Check access()
+                           documentation for more info
+    expand_lists_to_bool - convert sublists in a row into booleans. This is
+                           helpful if you want more compact output.
+    flatten_lists        - if we get sublists, just flatten them out. In practice
+                           if we don't flatten them out then the whole sublist
+                           will be used as a one cell entry
     '''
     keystrings = [expr.strip() for expr in keystring.split(',')]
     header = keystrings[:]
