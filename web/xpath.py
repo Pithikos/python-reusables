@@ -33,7 +33,6 @@ def get_element_xpath(element):
 
     while (element is not None):
         twins = same_tag_siblings(element)
-        print(twins)
         index = twins.index(element) if len(twins)>0 else 0
         if len(twins)==1:
             xpath = '/%s' % element_tag(element) + xpath
