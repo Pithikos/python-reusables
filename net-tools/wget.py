@@ -1,9 +1,12 @@
+import os
+from urllib import urlopen
+
 '''
 Download file at given url and save at path
 '''
 def wget(url, path):
 	file_name = url.split('/')[-1]
-	u = urllib.urlopen(url)
+	u = urlopen(url)
 	target = file_name
 	if path:
 		target = path+'/'+target
@@ -25,5 +28,5 @@ def wget(url, path):
 	    if not '100.00' in status:
 			sys.stdout.write('\r')
 	f.close()
-	mv(target+".temp", target)
+	os.rename(target+".temp", target)
 	return target
