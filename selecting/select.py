@@ -25,14 +25,15 @@ def select(expr, collection):
 			if selector.startswith('-'):
 				selector = get_range(selector[1:])
 				for n in selector:
-					collection.remove(n)
+					if n in collection:
+						collection.remove(n)
 		return collection
 		
 	# selective
 	else:
 		selected = []
 		for selector in selectors:
-			selector = get_range(selector)
-			for n in selector:
-				selected.append(n)
+			for n in get_range(selector):
+				if n in collection:
+					selected.append(n)
 		return selected
