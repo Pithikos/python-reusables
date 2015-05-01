@@ -17,7 +17,7 @@ def select(expr, collection):
 			a, b = map(int, selector.split('-'))
 			return range(a, b+1)
 		else:
-			return selector
+			return [int(selector)]
 	
 	# reductive selection
 	if filter(lambda sel: sel.startswith('-'), selectors):
