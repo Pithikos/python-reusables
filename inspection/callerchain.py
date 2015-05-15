@@ -17,9 +17,9 @@ class Tracer(object):
         self.whitespace = '    '
         self.indent_lvl = 0
 
-	'''
-	This method should be set by sys.settrace
-	'''
+    '''
+    This method should be set by sys.settrace
+    '''
     def trace(self, frame, event, arg):
 
         # Module info
@@ -55,9 +55,9 @@ class Tracer(object):
             self.indent_lvl -= 1
         return self.trace
 
-	'''
-	Watch for a specific package
-	'''
+    '''
+    Watch for a specific package
+    '''
     def watch_package(self, packname):
         self.tracing_packages.append(packname)
 
