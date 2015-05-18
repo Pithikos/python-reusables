@@ -9,13 +9,20 @@ tracer.watch_package('pyOCD')
 sys.settrace(tracer.trace)
 
 '''
+from inspect import ismethod
+import inspect
 class Tracer(object):
-	
-	
+
+
     def __init__(self):
         self.tracing_packages = []
         self.whitespace = '    '
         self.indent_lvl = 0
+
+
+    def belongs_to_class(frame):
+        pass
+
 
     '''
     This method should be set by sys.settrace
@@ -34,6 +41,7 @@ class Tracer(object):
             if not modpath.startswith(to_trace):
                 return self.trace
 
+
         # Other info
         fn_name = frame.f_code.co_name
         src_lines = inspect.getsource(frame).split('\n')
@@ -42,18 +50,62 @@ class Tracer(object):
         lineno = frame.f_lineno
         ws = self.whitespace
 
-        # Printing
+
+        '''
+        Gives arguments passed to method or function
+        in a printable form
+        '''
+        def beautify_args():
+            arg_names = inspect.getargs(frame.f_code).args
+            local_vals = inspect.getargvalues(frame).locals 
+            arg_dict = { name: frame.f_locals[name] for name in arg_names}
+            text = ''
+            for name, value in arg_dict.items():
+                if isinstance(value, int) or isinstance(value, float) or\
+                              value == None or isinstance(value, str):
+                    text += "%s=%s, "   % (name, repr(value))
+                else:
+                    text += "%s=%s, " % (name, str(type(value)))
+            return text[:-2]
+
+ 
+        '''
+        Gives return value/values of method or function
+        in a printable form
+        '''
+        def beautify_return():
+            if isinstance(arg, int) or isinstance(arg, float) or\
+                              arg == None or isinstance(arg, str):
+                return arg
+            else:
+                return str(type(arg))
+
+     
+        # Print call
         if event == 'call':
             self.indent_lvl += 1
-            print('%scallin: %s %s %s' % (self.indent_lvl*ws, modpath, fn_name, str(arg)))
+            fn_name   = frame.f_code.co_name
+            arg_names = inspect.getargs(frame.f_code).args
+            local_vals = inspect.getargvalues(frame).locals 
+            arg_dict = { name: frame.f_locals[name] for name in arg_names}
+            text = ''
+            for name, value in arg_dict.items():
+                if isinstance(value, str):
+                    text += "%s='%s', " % (name, value)
+                elif isinstance(value, int) or isinstance(value, float):
+                    text += "%s=%s, "   % (name, value)
+                else:
+                    text += "%s=%s, " % (name, str(type(value)))
+            print('%scallin: %s %s(%s)' % (self.indent_lvl*ws, modpath, fn_name, beautify_args()))
+
+
+        # Print return
         elif event == 'return':
-            if isinstance(arg, object):
-                ret = type(arg)
-            else:
-                ret = str(arg)
-            print('%sreturn: %s' % (self.indent_lvl*ws, ret))
+            print('%sreturn: %s' % (self.indent_lvl*ws, beautify_return()))
             self.indent_lvl -= 1
         return self.trace
+
+
 
     '''
     Watch for a specific package
@@ -67,7 +119,7 @@ class Tracer(object):
 
 # ------------------------------ Example -------------------------------
 
-import sys, inspect, pyOCD
+import sys, pyOCD
 
 tracer = Tracer()
 tracer.watch_package('pyOCD')
