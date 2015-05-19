@@ -74,11 +74,16 @@ class Tracer(object):
         def beautify_value(var):
             if isinstance(var, int)   or\
                isinstance(var, float) or\
-               isinstance(var, str)   or\
                var == None:
                 return str(var)
+            elif isinstance(var, str):
+                return "'%s'" % str(var)
             else:
-                return '<%s>' % type(var).__name__
+                t = type(var)
+                if t.__module__ == '__builtin__':
+                    return '<%s>' % t.__name__
+                else:
+                    return '<%s.%s>' % (t.__module__, t.__name__)
 
 
         # Print call
