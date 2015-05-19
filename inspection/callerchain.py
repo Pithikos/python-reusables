@@ -33,10 +33,13 @@ class Tracer(object):
             modpath = '<no module>'
 
         # Just return if not interested in package
+        found = False
         for to_trace in self.tracing_packages:
-            if not modpath.startswith(to_trace):
-                return self.trace
-
+            if modpath.startswith(to_trace):
+                found = True
+                break
+        if not found:
+            return self.trace
 
         # Other info
         fn_name = frame.f_code.co_name
@@ -129,6 +132,7 @@ import sys, pyOCD
 
 tracer = Tracer()
 tracer.watch_package('pyOCD')
+tracer.watch_package('usb')
 sys.settrace(tracer.trace)
 
-pyOCD.board.MbedBoard.listConnectedBoards() # will print call chain for this
+boards = pyOCD.board.MbedBoard.getAllConnectedBoards() # will print call chain for this
