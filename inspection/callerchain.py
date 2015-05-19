@@ -9,7 +9,6 @@ tracer.watch_package('pyOCD')
 sys.settrace(tracer.trace)
 
 '''
-from inspect import ismethod
 import inspect
 class Tracer(object):
 
@@ -19,9 +18,6 @@ class Tracer(object):
         self.whitespace = '    '
         self.indent_lvl = 0
 
-
-    def belongs_to_class(frame):
-        pass
 
 
     '''
@@ -61,26 +57,30 @@ class Tracer(object):
             arg_dict = { name: frame.f_locals[name] for name in arg_names}
             text = ''
             for name, value in arg_dict.items():
-                if isinstance(value, int) or isinstance(value, float) or\
-                              value == None or isinstance(value, str):
-                    text += "%s=%s, "   % (name, repr(value))
-                else:
-                    text += "%s=%s, " % (name, str(type(value)))
+                text += beautify_variable(name, value) + ', '
             return text[:-2]
 
- 
+        '''
+        Makes a printable string out of a variable
+        '''
+        def beautify_variable(name, value):
+            return "%s=%s" % (name, beautify_value(value))
+
+
         '''
         Gives return value/values of method or function
         in a printable form
         '''
-        def beautify_return():
-            if isinstance(arg, int) or isinstance(arg, float) or\
-                              arg == None or isinstance(arg, str):
-                return arg
+        def beautify_value(var):
+            if isinstance(var, int)   or\
+               isinstance(var, float) or\
+               isinstance(var, str)   or\
+               var == None:
+                return str(var)
             else:
-                return str(type(arg))
+                return '<%s>' % type(var).__name__
 
-     
+
         # Print call
         if event == 'call':
             self.indent_lvl += 1
@@ -101,10 +101,11 @@ class Tracer(object):
 
         # Print return
         elif event == 'return':
-            print('%sreturn: %s' % (self.indent_lvl*ws, beautify_return()))
+            print('%sreturn: %s' % (self.indent_lvl*ws, beautify_value(arg)))
             self.indent_lvl -= 1
-        return self.trace
 
+
+        return self.trace
 
 
     '''
