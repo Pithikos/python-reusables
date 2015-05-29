@@ -63,6 +63,7 @@ class Tracer(object):
                 text += beautify_variable(name, value) + ', '
             return text[:-2]
 
+
         '''
         Makes a printable string out of a variable
         '''
@@ -132,7 +133,6 @@ import sys, pyOCD
 
 tracer = Tracer()
 tracer.watch_package('pyOCD')
-tracer.watch_package('usb')
 sys.settrace(tracer.trace)
 
 boards = pyOCD.board.MbedBoard.getAllConnectedBoards() # will print call chain for this
