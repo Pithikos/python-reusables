@@ -1,22 +1,46 @@
 import os
 from .file import barename
 
-"""
-Returns the absolute path to a command. Notice that no checking
-is being made to see if the file is executable or not.
+
+def cmd_paths():
+    """ Returns a list of paths found in PATH environment variable.
+    """
+    if not 'PATH' in os.environ:
+        return False
+    PATH = os.environ['PATH']
+    PATH = os.path.normpath(PATH)
+    return PATH.split(os.path.pathsep)
+    
+
+
+""" Returns the absolute path to a command. Notice that no checking
+    is being made to see if the file is executable or not.
 """
 def find_cmd_abspath(cmd):
-    if not 'PATH' in os.environ:
+    if not cmd_paths():
         raise Exception("Can't find command path for current platform ('%s')" % sys.platform)
-    PATH = os.environ['PATH']
-    PWD  = os.getcwd()
-    lookup_paths = PWD + os.pathsep + PATH
-
-    for path in lookup_paths.split(os.pathsep):
-        for filename in os.listdir(path):
-            if barename(filename) == barename(cmd):
-                return path + os.sep + filename
+    if os.path.isabs(cmd) and os.path.exists(cmd):
+        return cmd
+    cmd_filename = os.path.basename(cmd)
+    for path in cmd_paths():
+        if not os.path.exists(path):
+            continue
+        for entry in os.listdir(path):
+            if not os.path.isfile(os.path.join(path, entry)):
+                continue
+            filename = entry
+            if '.' in cmd_filename and filename == cmd_filename:
+                return os.path.join(path, filename)
+            elif barename(filename) == cmd_filename:
+                return os.path.join(path, filename)
     return None
+
+
+############## TESTS (linux) #############
+
+assert find_cmd_abspath('ls')    == '/bin/ls'
+assert find_cmd_abspath('ls.sh') != '/bin/ls'
+
 
 
 
