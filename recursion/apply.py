@@ -30,8 +30,28 @@ def apply_recursively(fn, iterable, predicate=lambda x: True):
         return [apply_recursively(fn, iterable[0], predicate)]
 
 
+# Apply to leaves of a mixed structure (dict + list)
+def traverse_struct(struct, leaf_apply=lambda x: x, predicate=lambda x: True):
+    if type(struct) is list:
+        if len(struct) > 1:
+            return [traverse_struct(struct[0], leaf_apply, predicate)] + traverse_struct(struct[1:], leaf_apply, predicate)
+        else:
+            return [traverse_struct(struct[0], leaf_apply, predicate)]
+    elif type(struct) is dict:
+        for k,v in struct.iteritems():
+            struct[k] = traverse_struct(v, leaf_apply, predicate)
+    else:
+        if predicate(struct):
+            return leaf_apply(struct)
+        else:
+            return struct
+    return struct
+
 
 ############################## Examples ################################
 
 apply_recursively(str, [[1, 2], 3])                      # => [['1', '2'], '3']
 apply_recursively(int, [['1', 'a'], '2'], str.isdigit)   # => [[1, 'a'], 2]
+
+traverse_struct([{'a' : 1, 'b' : 4}, [2, 3]], lambda x: 'TEST', lambda x: x>2)
+# => [{'a': 1, 'b': 'TEST'}, [2, 'TEST']]
