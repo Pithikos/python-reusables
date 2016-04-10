@@ -31,18 +31,18 @@ def apply_recursively(fn, iterable, predicate=lambda x: True):
 
 
 # Apply to leaves of a mixed structure (dict + list)
-def traverse_struct(struct, leaf_apply=lambda x: x, predicate=lambda x: True):
+def apply_leaves(struct, fn=lambda x: x, predicate=lambda x: True):
     if type(struct) is list:
         if len(struct) > 1:
-            return [traverse_struct(struct[0], leaf_apply, predicate)] + traverse_struct(struct[1:], leaf_apply, predicate)
+            return [traverse_struct(struct[0], fn, predicate)] + traverse_struct(struct[1:], fn, predicate)
         else:
-            return [traverse_struct(struct[0], leaf_apply, predicate)]
+            return [traverse_struct(struct[0], fn, predicate)]
     elif type(struct) is dict:
         for k,v in struct.iteritems():
-            struct[k] = traverse_struct(v, leaf_apply, predicate)
+            struct[k] = traverse_struct(v, fn, predicate)
     else:
         if predicate(struct):
-            return leaf_apply(struct)
+            return fn(struct)
         else:
             return struct
     return struct
