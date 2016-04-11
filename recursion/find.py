@@ -1,4 +1,4 @@
-def find_values(obj, value, found=[]):
+def find_values(obj, value):
     """
     Multi-purporse finding in a complex structure of arbitrarily mixed
     dict and list.
@@ -9,26 +9,24 @@ def find_values(obj, value, found=[]):
     that include the value. This gives some context as opposed to returning
     the single found value.
     """
-    if obj == value:
-        found.append(obj)
+    found = []
     if type(obj) is list:
         if value in obj:
             found.append(obj)
         for item in obj:
             if type(item) is list or type(item) is dict:
-                find_values(item, value)
+               found += find_values(item, value)
     if type(obj) is dict:
         for key in obj:
             if obj[key] == value:
                 found.append(obj)
             if type(obj[key]) is list or type(obj[key]) is dict:
-                find_values(obj[key], value)
+                found += find_values(obj[key], value)
     return found
 
 
 
-
-def find_keys(obj, key, found=[]):
+def find_keys(obj, key):
     """
     Multi-purporse finding in a complex structure of arbitrarily mixed
     dict and list.
@@ -39,18 +37,17 @@ def find_keys(obj, key, found=[]):
     that include the key. This gives some context as opposed to returning
     the single found key.
     """
-    if obj == key:
-        found.append(obj)
+    found = []
     if type(obj) is list:
         for item in obj:
             if type(item) is list or type(item) is dict:
-                find_keys(item, key)
+                found += find_keys(item, key)
     if type(obj) is dict:
         if key in obj:
             found.append(obj)
         for k in obj:
             if type(obj[k]) is list or type(obj[k]) is dict:
-                find_keys(obj[k], key)
+                found += find_keys(obj[k], key)
     return found
 
 
