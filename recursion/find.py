@@ -28,6 +28,34 @@ def find_values(obj, value, found=[]):
 
 
 
+def find_keys(obj, key, found=[]):
+    """
+    Multi-purporse finding in a complex structure of arbitrarily mixed
+    dict and list.
+
+    key  - the key that we look in the given structure
+
+    The return value is a list if found items. The items are the substructures
+    that include the key. This gives some context as opposed to returning
+    the single found key.
+    """
+    if obj == key:
+        found.append(obj)
+    if type(obj) is list:
+        for item in obj:
+            if type(item) is list or type(item) is dict:
+                find_keys(item, key)
+    if type(obj) is dict:
+        if key in obj:
+            found.append(obj)
+        for k in obj:
+            if type(obj[k]) is list or type(obj[k]) is dict:
+                find_keys(obj[k], key)
+    return found
+
+
+
+
 ############################## Examples ################################
 struct = [
     42,
