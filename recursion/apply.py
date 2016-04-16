@@ -55,6 +55,28 @@ def apply_leaves(struct, fn=lambda x: x, predicate=lambda x: True):
     return struct
 
 
+def apply_leaves_with_key(struct, key, fn=lambda x: x):
+    """
+    Apple to leaves only if they belong to a specific key.
+
+    ie. apply_leaves_with_key({'a' : 34, 'b' :  55 }, 'b', str)
+                           => {'a' : 34, 'b' : '55'}
+    """
+    if type(struct) is list:
+        if len(struct) > 1:
+            return [apply_leaves_with_key(struct[0], key, fn)] + apply_leaves_with_key(struct[1:], key, fn)
+        else:
+            return [apply_leaves_with_key(struct[0], key, fn)]
+    elif type(struct) is dict:
+        for k,v in struct.iteritems():
+            if type(v) is not dict and type(v) is not list:
+                if key == k:
+                    struct[key] = fn(struct[key])
+            else:
+                struct[k] = apply_leaves_with_key(v, key, fn)
+    return struct
+
+
 
 ############################## Examples ################################
 
