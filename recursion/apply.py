@@ -2,8 +2,10 @@
 # depth is going to be big
 
 
-# Simple
 def apply_recursively(fn, obj):
+    """
+    Apply recursively to each node of a mixed dict-list structure
+    """
     if not obj:
         return obj
     if type(obj) is list:
@@ -17,8 +19,11 @@ def apply_recursively(fn, obj):
     return fn(obj)
 
 
-# With predicate
 def apply_recursively(fn, obj, predicate=lambda x: True):
+    """
+    Apply recursively to each node of a mixed dict-list structure
+    if predicate evaluates to true
+    """
     if not obj:
         return obj
     if type(obj) is list:
@@ -37,8 +42,10 @@ def apply_recursively(fn, obj, predicate=lambda x: True):
         return obj
 
 
-# Apply to leaves of a mixed structure (dict + list)
 def apply_leaves(struct, fn=lambda x: x, predicate=lambda x: True):
+    """
+    Apply to leaves of a mixed dict-list structure
+    """
     if type(struct) is list:
         if len(struct) > 1:
             return [apply_leaves(struct[0], fn, predicate)] + apply_leaves(struct[1:], fn, predicate)
@@ -57,7 +64,7 @@ def apply_leaves(struct, fn=lambda x: x, predicate=lambda x: True):
 
 def apply_leaves_with_key(struct, key, fn=lambda x: x):
     """
-    Apple to leaves only if they belong to a specific key.
+    Apple to leaves only if they belong to a specific key
 
     ie. apply_leaves_with_key({'a' : 34, 'b' :  55 }, 'b', str)
                            => {'a' : 34, 'b' : '55'}
