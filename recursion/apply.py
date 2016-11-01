@@ -62,24 +62,24 @@ def apply_leaves(struct, fn=lambda x: x, predicate=lambda x: True):
     return struct
 
 
-def apply_leaves_by_key(struct, key_fn=lambda k: k, val_fn=lambda v: v):
+def apply_leaves_by_key(struct, select=lambda k: k, apply=lambda v: v):
     """
     Apple to leaves only if they belong to a specific key
-    ie. apply_leaves_by_key({'a' : 34, 'b' :  55 }, 'b', str)
+    ie. apply_leaves_by_key({'a' : 34, 'b' :  55 }, lambda k: k=='b', str)
                            => {'a' : 34, 'b' : '55'}
     """
     if type(struct) is list:
         if len(struct) > 1:
-            return [apply_leaves_with_key(struct[0], key_fn, val_fn)] + apply_leaves_with_key(struct[1:], key_fn, val_fn)
+            return [apply_leaves_by_key(struct[0], select, apply)] + apply_leaves_by_key(struct[1:], select, apply)
         else:
-            return [apply_leaves_with_key(struct[0], key_fn, val_fn)]
+            return [apply_leaves_by_key(struct[0], select, apply)]
     elif type(struct) is dict:
         for k,v in struct.items():
             if type(v) is not dict and type(v) is not list:
-                if key_fn(k):
-                    struct[k] = val_fn(struct[k])
+                if select(k):
+                    struct[k] = apply(v)
             else:
-                struct[k] = apply_leaves_with_key(v, key_fn, val_fn)
+                struct[k] = apply_leaves_by_key(v, select, apply)
     return struct
 
 
