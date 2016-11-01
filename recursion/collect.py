@@ -61,7 +61,7 @@ def collect_by_key(obj, key_fn, only_values=True):
                 else:
                     if not obj in found:
                         found += [obj]
-            elif type(v) is not dict and type(v) is not list:
+            elif type(v) is dict or type(v) is list:
                 found += collect_by_key(v, key_fn, only_values)
     return found
 
@@ -73,6 +73,16 @@ struct = [
     { 'a' : 2, 'b' : [5, 2, 1], 'c' : 3 },
     [4, 5, [7, 9, 1], 3]
 ]
+nested = {
+    "h1" : {
+        "h2"  : 'test1',
+        "h22" : 'test2',
+        "h3"  : {
+            "h4" : 'test3'
+        }
+    }
+}
+
 assert collect_values(     1, val_fn=lambda v: v==1, only_values=False) == [1]
 assert collect_values([1, 2], val_fn=lambda v: v==1, only_values=False) == [[1, 2]]
 assert collect_values([1, 2], val_fn=lambda v: v==1, only_values=True)  == [1]
@@ -83,6 +93,9 @@ assert collect_values(struct, val_fn=lambda v: v==3, only_values=False) == [{ 'a
 assert collect_by_key({'a' : 1}, key_fn=lambda k: k=='a', only_values=False) == [{'a' : 1}]
 assert collect_by_key({'a' : 1}, key_fn=lambda k: k=='a', only_values=True)  == [1]
 assert collect_by_key(struct, key_fn=lambda k: k=='b', only_values=False) == [{ 'a' : 2, 'b' : [5, 2, 1], 'c' : 3 }]
-assert collect_by_key(struct, key_fn=lambda k: k=='b', only_values=True) ==  [[5, 2, 1]]
+assert collect_by_key(struct, key_fn=lambda k: k=='b', only_values=True)  ==  [[5, 2, 1]]
 assert collect_by_key(struct, key_fn=lambda k: True, only_values=False)   == [{ 'a' : 2, 'b' : [5, 2, 1], 'c' : 3 }]
 assert collect_by_key(struct, key_fn=lambda k: True, only_values=True)    == [2, 3, [5, 2, 1]] # Order might change
+assert collect_by_key(nested, key_fn=lambda k: k=='h4', only_values=True)  == ['test3']
+assert collect_by_key(nested, key_fn=lambda k: k=='h4', only_values=False) == [{'h4' : 'test3'}]
+assert collect_by_key(nested, key_fn=lambda k: k.startswith('h2'), only_values=True) == ['test1','test2']
