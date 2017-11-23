@@ -7,6 +7,7 @@ def investigate(obj, path='', accumulator=None):
     Example:
         results = investigate({'names': ['John', 'Tom']})
         print('\n'.join(results))
+         dict
         ['names'] list
         ['names'][0] John
         ['names'][1] Tom
@@ -31,7 +32,7 @@ def investigate(obj, path='', accumulator=None):
         for k,v in obj.items():
             accumulator.extend(investigate(v, path+"['%s']" % k))
 
-    else:  # assume it's primate
+    else:  # assume it's primitive
         line = '%s %s' % (path, obj)
         return [line]
 
